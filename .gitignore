@@ -1,0 +1,28 @@
+# Build output
+/Build/
+/out/
+/Saved/
+
+# vcpkg
+/vcpkg_installed/
+
+# CMake
+CMakeUserPresets.json
+CMakeCache.txt
+CMakeFiles/
+compile_commands.json
+
+# IDE
+.vs/
+.idea/
+*.user
+*.suo
+.cache/
+.vscode/*
+!.vscode/launch.json
+!.vscode/settings.json
+!.vscode/extensions.json
+
+# OS
+Thumbs.db
+.DS_Store

@@ -1,0 +1,4 @@
+au_add_module(@AU_MODULE_NAME@
+    PUBLIC_DEPS @AU_MODULE_DEPS@
+    FOLDER      @AU_FOLDER@
+)

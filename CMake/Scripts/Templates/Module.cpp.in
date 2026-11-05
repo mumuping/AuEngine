@@ -1,0 +1,9 @@
+#include "@AU_MODULE_NAME@/@AU_MODULE_NAME@Module.h"
+
+namespace @AU_NAMESPACE@
+{
+    std::string_view @AU_MODULE_NAME@Module::GetName()
+    {
+        return "@AU_MODULE_NAME@";
+    }
+} // namespace @AU_NAMESPACE@

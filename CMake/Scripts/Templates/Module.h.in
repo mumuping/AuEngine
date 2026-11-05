@@ -1,0 +1,14 @@
+#pragma once
+
+#include "@AU_MODULE_NAME@/@AU_MODULE_NAME@API.h"
+
+#include <string_view>
+
+namespace @AU_NAMESPACE@
+{
+    class @AU_MODULE_EXPORT@ @AU_MODULE_NAME@Module
+    {
+    public:
+        [[nodiscard]] static std::string_view GetName();
+    };
+} // namespace @AU_NAMESPACE@

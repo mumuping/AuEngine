@@ -1,0 +1,147 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 28,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "base",
+      "hidden": true,
+      "binaryDir": "${sourceDir}/Build/${presetName}",
+      "installDir": "${sourceDir}/Build/Install/${presetName}",
+      "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+      "cacheVariables": {
+        "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/CMake/Triplets",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "CMAKE_CONFIGURATION_TYPES": "Debug;RelWithDebInfo;Release"
+      }
+    },
+    {
+      "name": "windows-base",
+      "hidden": true,
+      "inherits": "base",
+      "generator": "Ninja Multi-Config",
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      },
+      "toolset": {
+        "value": "host=x64",
+        "strategy": "external"
+      },
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET": "x64-windows-au"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "linux-base",
+      "hidden": true,
+      "inherits": "base",
+      "generator": "Ninja Multi-Config",
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET": "x64-linux-au"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "msvc",
+      "displayName": "MSVC (Ninja Multi-Config)",
+      "inherits": "windows-base",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "cl",
+        "CMAKE_CXX_COMPILER": "cl"
+      }
+    },
+    {
+      "name": "clang-cl",
+      "displayName": "clang-cl (Ninja Multi-Config)",
+      "inherits": "windows-base",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "clang-cl",
+        "CMAKE_CXX_COMPILER": "clang-cl"
+      }
+    },
+    {
+      "name": "vs2026",
+      "displayName": "Visual Studio 2026 solution",
+      "inherits": "base",
+      "generator": "Visual Studio 18 2026",
+      "architecture": {
+        "value": "x64",
+        "strategy": "set"
+      },
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET": "x64-windows-au"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "linux-gcc",
+      "displayName": "GCC (Ninja Multi-Config)",
+      "inherits": "linux-base",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "gcc",
+        "CMAKE_CXX_COMPILER": "g++"
+      }
+    },
+    {
+      "name": "linux-clang",
+      "displayName": "Clang (Ninja Multi-Config)",
+      "inherits": "linux-base",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++"
+      }
+    }
+  ],
+  "buildPresets": [
+    { "name": "msvc-debug",                "configurePreset": "msvc",        "configuration": "Debug" },
+    { "name": "msvc-relwithdebinfo",       "configurePreset": "msvc",        "configuration": "RelWithDebInfo" },
+    { "name": "msvc-release",              "configurePreset": "msvc",        "configuration": "Release" },
+    { "name": "clang-cl-debug",            "configurePreset": "clang-cl",    "configuration": "Debug" },
+    { "name": "clang-cl-relwithdebinfo",   "configurePreset": "clang-cl",    "configuration": "RelWithDebInfo" },
+    { "name": "clang-cl-release",          "configurePreset": "clang-cl",    "configuration": "Release" },
+    { "name": "vs2026-debug",              "configurePreset": "vs2026",      "configuration": "Debug" },
+    { "name": "vs2026-relwithdebinfo",     "configurePreset": "vs2026",      "configuration": "RelWithDebInfo" },
+    { "name": "vs2026-release",            "configurePreset": "vs2026",      "configuration": "Release" },
+    { "name": "linux-gcc-debug",           "configurePreset": "linux-gcc",   "configuration": "Debug" },
+    { "name": "linux-gcc-relwithdebinfo",  "configurePreset": "linux-gcc",   "configuration": "RelWithDebInfo" },
+    { "name": "linux-gcc-release",         "configurePreset": "linux-gcc",   "configuration": "Release" },
+    { "name": "linux-clang-debug",         "configurePreset": "linux-clang", "configuration": "Debug" },
+    { "name": "linux-clang-relwithdebinfo","configurePreset": "linux-clang", "configuration": "RelWithDebInfo" },
+    { "name": "linux-clang-release",       "configurePreset": "linux-clang", "configuration": "Release" }
+  ],
+  "testPresets": [
+    {
+      "name": "test-base",
+      "hidden": true,
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "noTestsAction": "error"
+      }
+    },
+    { "name": "msvc-debug",        "inherits": "test-base", "configurePreset": "msvc",        "configuration": "Debug" },
+    { "name": "msvc-release",      "inherits": "test-base", "configurePreset": "msvc",        "configuration": "Release" },
+    { "name": "clang-cl-debug",    "inherits": "test-base", "configurePreset": "clang-cl",    "configuration": "Debug" },
+    { "name": "clang-cl-release",  "inherits": "test-base", "configurePreset": "clang-cl",    "configuration": "Release" },
+    { "name": "linux-gcc-debug",   "inherits": "test-base", "configurePreset": "linux-gcc",   "configuration": "Debug" },
+    { "name": "linux-clang-debug", "inherits": "test-base", "configurePreset": "linux-clang", "configuration": "Debug" }
+  ]
+}

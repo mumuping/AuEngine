@@ -1,0 +1,37 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "name": "auengine",
+  "version-string": "0.1.0",
+  "builtin-baseline": "ae8fa5ae5e6162a88e412618245809ed2aa579d9",
+  "dependencies": [
+    "mimalloc",
+    "spdlog"
+  ],
+  "features": {
+    "vulkan": {
+      "description": "Vulkan RHI backend (headers and loader come from the Vulkan SDK)",
+      "dependencies": [
+        "vulkan-memory-allocator"
+      ]
+    },
+    "d3d12": {
+      "description": "D3D12 RHI backend",
+      "dependencies": [
+        {
+          "name": "directx-headers",
+          "platform": "windows"
+        },
+        {
+          "name": "d3d12-memory-allocator",
+          "platform": "windows"
+        }
+      ]
+    },
+    "tests": {
+      "description": "Unit tests",
+      "dependencies": [
+        "gtest"
+      ]
+    }
+  }
+}

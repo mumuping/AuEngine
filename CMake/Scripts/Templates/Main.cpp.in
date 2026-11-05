@@ -1,0 +1,31 @@
+#include "Application/Application.h"
+
+#include "Core/Log.h"
+
+namespace @AU_NAMESPACE@
+{
+    namespace
+    {
+        class @AU_MODULE_NAME@Application final : public ::Au::Application
+        {
+        public:
+            @AU_MODULE_NAME@Application()
+                : ::Au::Application({.Name = "@AU_TARGET_NAME@"})
+            {
+            }
+
+        protected:
+            bool OnInitialize() override
+            {
+                AU_LOG_INFO("@AU_TARGET_NAME@ initialized");
+                return true;
+            }
+        };
+    } // namespace
+} // namespace @AU_NAMESPACE@
+
+int main(int argc, char** argv)
+{
+    @AU_NAMESPACE@::@AU_MODULE_NAME@Application app;
+    return app.Run(argc, argv);
+}

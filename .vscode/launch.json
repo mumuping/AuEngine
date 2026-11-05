@@ -1,0 +1,21 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch CMake target",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${command:cmake.launchTargetPath}",
+      "args": [],
+      "cwd": "${command:cmake.launchTargetDirectory}"
+    },
+    {
+      "name": "Launch CMake target (Vulkan)",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${command:cmake.launchTargetPath}",
+      "args": ["--rhi=vulkan"],
+      "cwd": "${command:cmake.launchTargetDirectory}"
+    }
+  ]
+}

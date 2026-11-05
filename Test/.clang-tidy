@@ -1,0 +1,9 @@
+---
+# gtest macros define globals, owning raw pointers and test classes that trip these checks.
+InheritParentConfig: true
+Checks: >
+  -cppcoreguidelines-avoid-non-const-global-variables,
+  -cppcoreguidelines-owning-memory,
+  -cppcoreguidelines-special-member-functions,
+  -misc-use-internal-linkage,
+  -readability-function-cognitive-complexity

@@ -1,0 +1,8 @@
+#include "@AU_MODULE_NAME@/@AU_MODULE_NAME@Module.h"
+
+#include <gtest/gtest.h>
+
+TEST(@AU_MODULE_NAME@, ModuleName)
+{
+    EXPECT_EQ(@AU_NAMESPACE@::@AU_MODULE_NAME@Module::GetName(), "@AU_MODULE_NAME@");
+}
