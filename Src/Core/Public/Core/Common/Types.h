@@ -3,8 +3,8 @@
 #include <cstddef>
 #include <cstdint>
 
-namespace Au
-{
+namespace Au {
+
     using u8  = std::uint8_t;
     using u16 = std::uint16_t;
     using u32 = std::uint32_t;
@@ -19,4 +19,5 @@ namespace Au
     using f64 = double;
 
     using usize = std::size_t;
-} // namespace Au
+
+}  // namespace Au

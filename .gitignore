@@ -19,9 +19,6 @@ compile_commands.json
 *.suo
 .cache/
 .vscode/*
-!.vscode/launch.json
-!.vscode/settings.json
-!.vscode/extensions.json
 
 # OS
 Thumbs.db

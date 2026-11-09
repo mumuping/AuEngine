@@ -3,6 +3,7 @@
 include_guard(GLOBAL)
 
 # ---- Core -----------------------------------------------------------------------------------------
+find_package(fmt CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
 
 find_package(mimalloc CONFIG REQUIRED)

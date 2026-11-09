@@ -1,6 +1,6 @@
 #include "Application/Application.h"
 
-#include "Core/Log.h"
+#include "Core/Log/Log.h"
 
 namespace @AU_NAMESPACE@
 {

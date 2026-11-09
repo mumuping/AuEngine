@@ -1,10 +1,1 @@
 add_subdirectory(Core)
-add_subdirectory(Platform)
-add_subdirectory(RHI)
-add_subdirectory(Renderer)
-add_subdirectory(Asset)
-add_subdirectory(Application)
-
-if(AU_BUILD_EDITOR)
-    add_subdirectory(Editor)
-endif()
