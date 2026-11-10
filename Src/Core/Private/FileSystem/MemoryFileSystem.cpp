@@ -3,6 +3,7 @@
 #include "Core/Common/Assert.h"
 #include "Core/Common/Error.h"
 #include "Core/Common/StringUtil.h"
+#include "Core/Memory/UniquePtr.h"
 
 #include <algorithm>
 #include <span>
@@ -15,14 +16,14 @@ namespace Au::Fs {
         struct MemoryNode {
             enum class EKind : u8 { Directory, File };
 
-            EKind                                    Kind = EKind::Directory;
-            std::string                              Name;
-            std::vector<std::unique_ptr<MemoryNode>> Children;
-            std::vector<u8>                          Data;
+            EKind                              Kind = EKind::Directory;
+            std::string                        Name;
+            std::vector<UniquePtr<MemoryNode>> Children;
+            std::vector<u8>                    Data;
         };
 
         [[nodiscard]] const MemoryNode* FindChild(const MemoryNode& parent, std::string_view name) {
-            for (const std::unique_ptr<MemoryNode>& child : parent.Children) {
+            for (const UniquePtr<MemoryNode>& child : parent.Children) {
                 if (AsciiEqualsIgnoreCase(child->Name, name)) {
                     return child.get();
                 }
@@ -161,7 +162,7 @@ namespace Au::Fs {
         MemoryNode Root{};
     };
 
-    MemoryFileSystem::MemoryFileSystem() : m_Impl(std::make_unique<Impl>()) {
+    MemoryFileSystem::MemoryFileSystem() : m_Impl(MakeUnique<Impl>(Memory::EMemoryTag::FileSystem)) {
         m_Impl->Root.Kind = MemoryNode::EKind::Directory;
         m_Impl->Root.Name = "/";
     }
@@ -185,7 +186,7 @@ namespace Au::Fs {
         return stat;
     }
 
-    Result<std::unique_ptr<IFile>> MemoryFileSystem::Open(const Path& path, EFileAccess access, EFileMode mode) {
+    Result<FilePtr> MemoryFileSystem::Open(const Path& path, EFileAccess access, EFileMode mode) {
         Result<std::vector<std::string_view>> segmentsResult = SplitAbsolute(path);
         if (!segmentsResult) {
             return Unexpected(segmentsResult.error());
@@ -203,7 +204,7 @@ namespace Au::Fs {
             for (const std::string_view segment : parents) {
                 MemoryNode* child = FindChild(*parent, segment);
                 if (child == nullptr) {
-                    auto created  = std::make_unique<MemoryNode>();
+                    auto created  = MakeUnique<MemoryNode>(Memory::EMemoryTag::FileSystem);
                     created->Kind = MemoryNode::EKind::Directory;
                     created->Name = std::string(segment);
                     child         = created.get();
@@ -263,7 +264,7 @@ namespace Au::Fs {
             if (mode == EFileMode::OpenExisting || mode == EFileMode::Truncate) {
                 return Unexpected(Error::Format({}, "file not found: '{}'", path.View()));
             }
-            auto created  = std::make_unique<MemoryNode>();
+            auto created  = MakeUnique<MemoryNode>(Memory::EMemoryTag::FileSystem);
             created->Kind = MemoryNode::EKind::File;
             created->Name = std::string(fileName);
             node          = created.get();
@@ -272,7 +273,7 @@ namespace Au::Fs {
             node->Data.clear();
         }
 
-        return std::unique_ptr<IFile>(std::make_unique<MemoryFile>(node, access, append));
+        return FilePtr(MakeUnique<MemoryFile>(Memory::EMemoryTag::FileSystem, node, access, append));
     }
 
     Status MemoryFileSystem::Remove(const Path& path) {
@@ -292,7 +293,7 @@ namespace Au::Fs {
             return Unexpected(Error::Format({}, "path not found: '{}'", path.View()));
         }
 
-        const auto iterator = std::ranges::find_if(parent->Children, [&](const std::unique_ptr<MemoryNode>& child) {
+        const auto iterator = std::ranges::find_if(parent->Children, [&](const UniquePtr<MemoryNode>& child) {
             return AsciiEqualsIgnoreCase(child->Name, name);
         });
         if (iterator == parent->Children.end()) {
@@ -314,7 +315,7 @@ namespace Au::Fs {
         for (const std::string_view segment : *segmentsResult) {
             MemoryNode* child = FindChild(*current, segment);
             if (child == nullptr) {
-                auto created  = std::make_unique<MemoryNode>();
+                auto created  = MakeUnique<MemoryNode>(Memory::EMemoryTag::FileSystem);
                 created->Kind = MemoryNode::EKind::Directory;
                 created->Name = std::string(segment);
                 child         = created.get();
@@ -342,7 +343,7 @@ namespace Au::Fs {
 
         std::vector<Path> children;
         children.reserve(node->Children.size());
-        for (const std::unique_ptr<MemoryNode>& child : node->Children) {
+        for (const UniquePtr<MemoryNode>& child : node->Children) {
             Result<Path> joined =
                 directory.IsRoot() ? Path::Normalize(std::string("/") + child->Name) : directory.Join(child->Name);
             if (!joined) {

@@ -5,7 +5,7 @@
 namespace Au::Fs {
 
     Result<std::vector<u8>> ReadAll(IFileSystem& fileSystem, const Path& path) {
-        Result<std::unique_ptr<IFile>> file = fileSystem.Open(path, EFileAccess::Read, EFileMode::OpenExisting);
+        Result<FilePtr> file = fileSystem.Open(path, EFileAccess::Read, EFileMode::OpenExisting);
         if (!file) {
             return Unexpected(file.error());
         }
@@ -36,7 +36,7 @@ namespace Au::Fs {
     }
 
     Status WriteAll(IFileSystem& fileSystem, const Path& path, std::span<const u8> data) {
-        Result<std::unique_ptr<IFile>> file = fileSystem.Open(path, EFileAccess::Write, EFileMode::CreateAlways);
+        Result<FilePtr> file = fileSystem.Open(path, EFileAccess::Write, EFileMode::CreateAlways);
         if (!file) {
             return Unexpected(file.error());
         }

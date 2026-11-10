@@ -3,6 +3,7 @@
 #include "Core/Common/Expected.h"
 #include "Core/Common/Types.h"
 #include "Core/FileSystem/FileTypes.h"
+#include "Core/Memory/UniquePtr.h"
 
 #include <span>
 
@@ -18,5 +19,7 @@ namespace Au::Fs {
         [[nodiscard]] virtual u64 Tell() const                         = 0;
         [[nodiscard]] virtual u64 Size() const                         = 0;
     };
+
+    using FilePtr = UniquePtr<IFile>;
 
 }  // namespace Au::Fs

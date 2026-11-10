@@ -2,6 +2,7 @@
 
 #include "Core/Common/Assert.h"
 #include "Core/Common/Error.h"
+#include "Core/Memory/UniquePtr.h"
 
 #include <algorithm>
 #include <utility>
@@ -11,10 +12,10 @@ namespace Au::Fs {
     namespace {
 
         struct MountEntry {
-            Path                         MountPoint;
-            std::unique_ptr<IFileSystem> Backend;
-            int                          Priority = 0;
-            bool                         ReadOnly = false;
+            Path          MountPoint;
+            FileSystemPtr Backend;
+            int           Priority = 0;
+            bool          ReadOnly = false;
         };
 
         [[nodiscard]] bool IsWriteOperation(EFileAccess access, EFileMode mode) noexcept {
@@ -55,13 +56,12 @@ namespace Au::Fs {
         }
     };
 
-    VirtualFileSystem::VirtualFileSystem() : m_Impl(std::make_unique<Impl>()) {
+    VirtualFileSystem::VirtualFileSystem() : m_Impl(MakeUnique<Impl>(Memory::EMemoryTag::FileSystem)) {
     }
 
     VirtualFileSystem::~VirtualFileSystem() = default;
 
-    Status
-    VirtualFileSystem::Mount(Path mountPoint, std::unique_ptr<IFileSystem> backend, int priority, bool readOnly) {
+    Status VirtualFileSystem::Mount(Path mountPoint, FileSystemPtr backend, int priority, bool readOnly) {
         AU_ENSURE(backend != nullptr);
         if (!mountPoint.IsAbsolute()) {
             return Unexpected(Error::Format({}, "mount point must be absolute: '{}'", mountPoint.View()));
@@ -111,8 +111,8 @@ namespace Au::Fs {
         return FileStat{};
     }
 
-    Result<std::unique_ptr<IFile>> VirtualFileSystem::Open(const Path& path, EFileAccess access, EFileMode mode) {
-        const bool                             writing = IsWriteOperation(access, mode);
+    Result<FilePtr> VirtualFileSystem::Open(const Path& path, EFileAccess access, EFileMode mode) {
+        const bool                           writing = IsWriteOperation(access, mode);
         const std::vector<const MountEntry*> matches = m_Impl->MatchingMounts(path);
         if (matches.empty()) {
             return Unexpected(Error::Format({}, "no mount for path: '{}'", path.View()));

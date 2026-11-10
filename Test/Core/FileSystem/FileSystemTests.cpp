@@ -3,10 +3,10 @@
 #include "Core/FileSystem/NativeFileSystem.h"
 #include "Core/FileSystem/Path.h"
 #include "Core/FileSystem/VirtualFileSystem.h"
+#include "Core/Memory/UniquePtr.h"
 
 #include <filesystem>
 #include <gtest/gtest.h>
-#include <memory>
 #include <string>
 #include <string_view>
 #include <system_error>
@@ -107,8 +107,7 @@ TEST(MemoryFileSystemTest, OpenExistingMissingReturnsError) {
     Au::Fs::MemoryFileSystem memory;
     const Au::Fs::Path       path = MustNormalize("/missing.txt");
 
-    Au::Result<std::unique_ptr<Au::Fs::IFile>> file =
-        memory.Open(path, Au::Fs::EFileAccess::Read, Au::Fs::EFileMode::OpenExisting);
+    Au::Result<Au::Fs::FilePtr> file = memory.Open(path, Au::Fs::EFileAccess::Read, Au::Fs::EFileMode::OpenExisting);
     ASSERT_FALSE(file);
     EXPECT_NE(file.error().Message().find("not found"), std::string::npos);
 }
@@ -130,9 +129,9 @@ TEST(NativeFileSystemTest, ReadWriteAndReadOnlyRejection) {
 }
 
 TEST(VirtualFileSystemTest, OverlayPriorityAndWritableRouting) {
-    auto base    = std::make_unique<Au::Fs::MemoryFileSystem>();
-    auto overlay = std::make_unique<Au::Fs::MemoryFileSystem>();
-    auto saved   = std::make_unique<Au::Fs::MemoryFileSystem>();
+    auto base    = Au::MakeUnique<Au::Fs::MemoryFileSystem>(Au::Memory::EMemoryTag::FileSystem);
+    auto overlay = Au::MakeUnique<Au::Fs::MemoryFileSystem>(Au::Memory::EMemoryTag::FileSystem);
+    auto saved   = Au::MakeUnique<Au::Fs::MemoryFileSystem>(Au::Memory::EMemoryTag::FileSystem);
 
     Au::Fs::MemoryFileSystem& baseRef    = *base;
     Au::Fs::MemoryFileSystem& overlayRef = *overlay;
@@ -165,7 +164,7 @@ TEST(VirtualFileSystemTest, OverlayPriorityAndWritableRouting) {
 }
 
 TEST(VirtualFileSystemTest, CaseInsensitiveMountAndUnmount) {
-    auto                      memory    = std::make_unique<Au::Fs::MemoryFileSystem>();
+    auto                      memory    = Au::MakeUnique<Au::Fs::MemoryFileSystem>(Au::Memory::EMemoryTag::FileSystem);
     Au::Fs::MemoryFileSystem& memoryRef = *memory;
     ASSERT_TRUE(Au::Fs::WriteText(memoryRef, MustNormalize("/A.txt"), "ok"));
 

@@ -3,8 +3,7 @@
 #include "Core/Common/Macros.h"
 #include "Core/CoreAPI.h"
 #include "Core/FileSystem/IFileSystem.h"
-
-#include <memory>
+#include "Core/Memory/UniquePtr.h"
 
 namespace Au::Fs {
 
@@ -16,19 +15,19 @@ namespace Au::Fs {
         ~VirtualFileSystem() override;
 
         // Larger priority wins for reads. Writes use the highest-priority writable mount whose prefix matches.
-        Status Mount(Path mountPoint, std::unique_ptr<IFileSystem> backend, int priority, bool readOnly);
+        Status Mount(Path mountPoint, FileSystemPtr backend, int priority, bool readOnly);
         Status Unmount(const Path& mountPoint);
 
         [[nodiscard]] Result<FileStat> Stat(const Path& path) const override;
 
-        Result<std::unique_ptr<IFile>>          Open(const Path& path, EFileAccess access, EFileMode mode) override;
+        Result<FilePtr>                         Open(const Path& path, EFileAccess access, EFileMode mode) override;
         Status                                  Remove(const Path& path) override;
         Status                                  CreateDirectories(const Path& path) override;
         [[nodiscard]] Result<std::vector<Path>> Enumerate(const Path& directory) const override;
 
       private:
         struct Impl;
-        std::unique_ptr<Impl> m_Impl;
+        UniquePtr<Impl> m_Impl;
     };
 
 }  // namespace Au::Fs

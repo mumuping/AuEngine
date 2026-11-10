@@ -29,14 +29,14 @@ namespace Au {
 
 #define AU_ENSURE(condition)                                                                        \
     do {                                                                                            \
-        if (AU_UNLIKELY(!(condition))) {                                                            \
+        if (AU_UNLIKELY(!(condition))) { /* NOLINT(readability-simplify-boolean-expr) */            \
             ::Au::Detail::FailAssert(std::source_location::current(), "AU_ENSURE(" #condition ")"); \
         }                                                                                           \
     } while (0)
 
 #define AU_ENSURE_MSG(condition, ...)                                                            \
     do {                                                                                         \
-        if (AU_UNLIKELY(!(condition))) {                                                         \
+        if (AU_UNLIKELY(!(condition))) { /* NOLINT(readability-simplify-boolean-expr) */         \
             ::Au::Detail::FailAssert(std::source_location::current(), fmt::format(__VA_ARGS__)); \
         }                                                                                        \
     } while (0)

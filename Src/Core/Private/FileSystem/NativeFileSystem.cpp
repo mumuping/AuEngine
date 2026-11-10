@@ -186,7 +186,7 @@ namespace Au::Fs {
     };
 
     NativeFileSystem::NativeFileSystem(const std::filesystem::path& root, bool readOnly)
-        : m_Impl(std::make_unique<Impl>()) {
+        : m_Impl(MakeUnique<Impl>(Memory::EMemoryTag::FileSystem)) {
         std::error_code error;
         std::filesystem::create_directories(root, error);
         m_Impl->Root     = CanonicalOrNormal(root);
@@ -236,7 +236,7 @@ namespace Au::Fs {
         return stat;
     }
 
-    Result<std::unique_ptr<IFile>> NativeFileSystem::Open(const Path& path, EFileAccess access, EFileMode mode) {
+    Result<FilePtr> NativeFileSystem::Open(const Path& path, EFileAccess access, EFileMode mode) {
         const bool writing = access != EFileAccess::Read || ModeRequiresWrite(mode);
         if (writing) {
             if (Status writable = EnsureWritable(m_Impl->ReadOnly, path); !writable) {
@@ -300,13 +300,13 @@ namespace Au::Fs {
             return Unexpected(Error::Format({}, "failed to open native file '{}'", ToUtf8(*mapped)));
         }
 
-        auto file = std::make_unique<NativeFile>(std::move(stream), access);
+        auto file = MakeUnique<NativeFile>(Memory::EMemoryTag::FileSystem, std::move(stream), access);
         if (mode == EFileMode::Append) {
             if (Status seekStatus = file->Seek(0, ESeekOrigin::End); !seekStatus) {
                 return Unexpected(seekStatus.error());
             }
         }
-        return std::unique_ptr<IFile>(std::move(file));
+        return FilePtr(std::move(file));
     }
 
     Status NativeFileSystem::Remove(const Path& path) {

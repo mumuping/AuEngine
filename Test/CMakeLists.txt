@@ -1,4 +1,5 @@
 au_add_test(CoreTests
-    SOURCES Core/LogTests.cpp Core/ErrorHandlingTests.cpp Core/FileSystem/FileSystemTests.cpp
+    SOURCES Core/Log/LogTests.cpp Core/Common/ErrorHandlingTests.cpp Core/FileSystem/FileSystemTests.cpp
+            Core/Memory/MemoryTests.cpp
     DEPS    Au::Core
 )
