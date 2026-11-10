@@ -69,9 +69,9 @@ namespace Au {
     }
 
     void SingletonSystem::AssertTypeNotRegistered(TypeKeyID id) const {
-        assert(GetInstance(id) == nullptr && "Singleton type already has a live instance");
+        AU_ENSURE_MSG(GetInstance(id) == nullptr, "Singleton type already has a live instance");
         for (const Entity& entry : m_Entities) {
-            assert(entry.TypeKey != id && "Singleton type already registered");
+            AU_ENSURE_MSG(entry.TypeKey != id, "Singleton type already registered");
         }
     }
 }  // namespace Au

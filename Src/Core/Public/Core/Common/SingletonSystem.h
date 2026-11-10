@@ -1,11 +1,11 @@
 #pragma once
 
+#include "Core/Common/Assert.h"
 #include "Core/Common/Macros.h"
 #include "Core/Common/TypeKey.h"
 #include "Core/Common/Types.h"
 #include "Core/CoreAPI.h"
 
-#include <cassert>
 #include <memory>
 #include <tuple>
 #include <type_traits>
@@ -33,7 +33,7 @@ namespace Au {
         template <typename T>
         T& Get() {
             void* instance = GetInstance(TypeKeyTag<T>());
-            assert(instance != nullptr && "Singleton not registered or not initialized");
+            AU_ENSURE_MSG(instance != nullptr, "Singleton not registered or not initialized");
             return *static_cast<T*>(instance);
         }
 
@@ -96,7 +96,7 @@ namespace Au {
         // Hooks an externally owned instance for cross-module lookup. Shutdown will not delete it.
         template <typename T>
         void RegisterInstance(T* instance) {
-            assert(instance != nullptr);
+            AU_ENSURE(instance != nullptr);
             const TypeKeyID typeKey = TypeKeyTag<T>();
             AssertTypeNotRegistered(typeKey);
 
@@ -107,7 +107,7 @@ namespace Au {
             m_Entities.push_back(std::move(entry));
 
             void* const previous = ExchangeInstance(typeKey, instance);
-            assert(previous == nullptr);
+            AU_ASSERT(previous == nullptr);
         }
 
         void Initialize();
@@ -149,7 +149,7 @@ namespace Au {
                     void* const previous = SingletonSystem::Get().ExchangeInstance(TypeKeyTag<T>(), instance);
                     // Duplicate should be impossible after AssertTypeNotRegistered; if it happens,
                     // keep the existing instance and discard the one we just created.
-                    assert(previous == nullptr && "Duplicate singleton instance");
+                    AU_ASSERT_MSG(previous == nullptr, "Duplicate singleton instance");
                     if (previous != nullptr) {
                         SingletonSystem::Get().ExchangeInstance(TypeKeyTag<T>(), previous);
                         delete instance;  // NOLINT(cppcoreguidelines-owning-memory)
